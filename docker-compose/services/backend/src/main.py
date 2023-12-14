@@ -33,7 +33,10 @@ motor = motor.motor_asyncio.AsyncIOMotorClient(mongodb_url_str)
 # CORS configuration
 origins = [
     "http://localhost:8080",
-    "http://backend:8080"  # Assuming Vue.js is served on port 8080
+    "http://backend:8080",
+    'http://ec2-44-202-119-216.compute-1.amazonaws.com:8080',
+    'http://ec2-44-202-119-216.compute-1.amazonaws.com:5040',
+    # Assuming Vue.js is served on port 8080
     # Add any other origins if needed
 ]
 
