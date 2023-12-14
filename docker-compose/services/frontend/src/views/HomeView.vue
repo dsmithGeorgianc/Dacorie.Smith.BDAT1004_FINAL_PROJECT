@@ -125,7 +125,8 @@ const selectedStockData = ref([]);
 
 const selectStock = async (stock) => {
   try {
-    const response = await axios.get('http://localhost:5040/store/quotes/get_item_by_symbol/' + stock, {});
+   // const response = await axios.get('http://localhost:5040/store/quotes/get_item_by_symbol/' + stock, {});
+     const response = await axios.get('http://ec2-44-202-119-216.compute-1.amazonaws.com:5040/store/quotes/get_item_by_symbol/' + stock, {});
     var data = response.data.data;
     selectedStockData.value = data[0]; // Assuming the API returns an array
     //console.log("Reach")
