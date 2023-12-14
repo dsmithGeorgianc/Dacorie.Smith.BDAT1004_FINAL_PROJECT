@@ -4,3 +4,16 @@ uvicorn
 pyspark
 pymongo
 confluent-kafka
+python-dotenv
+jsons
+requests
+fastapi
+pydantic
+email-validator
+pandas
+load_dotenv
+python-dotenv~=0.19.2
+aiohttp
+motor
+pytz
+redis

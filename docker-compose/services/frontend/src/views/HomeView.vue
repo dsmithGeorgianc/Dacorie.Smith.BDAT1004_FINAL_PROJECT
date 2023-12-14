@@ -1,269 +1,202 @@
 <template>
-
   <main>
     <div class="relative isolate overflow-hidden pt-16">
-      <!-- Secondary navigation -->
-      <header class="pb-4 pt-6 sm:pb-6">
-        <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-6 px-4 sm:flex-nowrap sm:px-6 lg:px-8">
-          <h1 class="text-base font-semibold leading-7 text-gray-900">Cashflow</h1>
-          <div class="order-last flex w-full gap-x-8 text-sm font-semibold leading-6 sm:order-none sm:w-auto sm:border-l sm:border-gray-200 sm:pl-6 sm:leading-7">
-            <a v-for="item in secondaryNavigation" :key="item.name" :href="item.href" :class="item.current ? 'text-indigo-600' : 'text-gray-700'">{{ item.name }}</a>
-          </div>
-          <a href="#" class="ml-auto flex items-center gap-x-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            <PlusSmallIcon class="-ml-1.5 h-5 w-5" aria-hidden="true" />
-            New invoice
-          </a>
-        </div>
-      </header>
+
 
       <!-- Stats -->
       <div class="border-b border-b-gray-900/10 lg:border-t lg:border-t-gray-900/5">
         <dl class="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:px-2 xl:px-0">
-          <div v-for="(stat, statIdx) in stats" :key="stat.name" :class="[statIdx % 2 === 1 ? 'sm:border-l' : statIdx === 2 ? 'lg:border-l' : '', 'flex items-baseline flex-wrap justify-between gap-y-2 gap-x-4 border-t border-gray-900/5 px-4 py-10 sm:px-6 lg:border-t-0 xl:px-8']">
-            <dt class="text-sm font-medium leading-6 text-gray-500">{{ stat.name }}</dt>
-            <dd :class="[stat.changeType === 'negative' ? 'text-rose-600' : 'text-gray-700', 'text-xs font-medium']">{{ stat.change }}</dd>
-            <dd class="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">{{ stat.value }}</dd>
+        </dl>
+      </div>
+
+      <div
+          class="absolute left-0 top-full -z-10 mt-96 origin-top-left translate-y-40 -rotate-90 transform-gpu opacity-20 blur-3xl sm:left-1/2 sm:-ml-96 sm:-mt-10 sm:translate-y-0 sm:rotate-0 sm:transform-gpu sm:opacity-50"
+          aria-hidden="true">
+        <div class="aspect-[1154/678] w-[72.125rem] bg-gradient-to-br from-[#FF80B5] to-[#9089FC]"
+             style="clip-path: polygon(100% 38.5%, 82.6% 100%, 60.2% 37.7%, 52.4% 32.1%, 47.5% 41.8%, 45.2% 65.6%, 27.5% 23.4%, 0.1% 35.3%, 17.9% 0%, 27.7% 23.4%, 76.2% 2.5%, 74.2% 56%, 100% 38.5%)"/>
+      </div>
+    </div>
+
+    <div class="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
+
+       <div class="text-center">
+        <h1 class="text-5xl font-bold leading-tight text-gray-900">Global Stock Market Tracker</h1>
+        <p class="mt-2 text-xl text-gray-600">Analyze and track the performance of major stocks in real-time</p>
+      </div>
+
+
+      <div class="grid grid-cols-3 gap-3">
+        <div></div>
+        <div>
+          <div class="mx-auto max-w-md">
+            <Menu as="div" class="relative inline-block text-left mt-1 p-1.5">
+              <MenuButton
+                  class="inline-flex w-full justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
+                Select Stock
+                <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5" aria-hidden="true"/>
+              </MenuButton>
+              <Transition enter-active-class="transition ease-out duration-100"
+                          enter-from-class="transform opacity-0 scale-95"
+                          enter-to-class="transform opacity-100 scale-100"
+                          leave-active-class="transition ease-in duration-75"
+                          leave-from-class="transform opacity-100 scale-100"
+                          leave-to-class="transform opacity-0 scale-95">
+                <MenuItems
+                    class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div class="py-1">
+                    <template v-for="(stock, index) in stockOptions" :key="index">
+                      <MenuItem>
+                        <button
+                            class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                            @click="selectStock(stock)">{{ stock }}
+                        </button>
+                      </MenuItem>
+                    </template>
+                  </div>
+                </MenuItems>
+              </Transition>
+            </Menu>
+          </div>
+        </div>
+        <div></div>
+      </div>
+
+      <div>
+
+        <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div v-for="item in calculatedStats" :key="item.name"
+               class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">{{ item.name }}</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{ item.value }}</dd>
           </div>
         </dl>
       </div>
 
-      <div class="absolute left-0 top-full -z-10 mt-96 origin-top-left translate-y-40 -rotate-90 transform-gpu opacity-20 blur-3xl sm:left-1/2 sm:-ml-96 sm:-mt-10 sm:translate-y-0 sm:rotate-0 sm:transform-gpu sm:opacity-50" aria-hidden="true">
-        <div class="aspect-[1154/678] w-[72.125rem] bg-gradient-to-br from-[#FF80B5] to-[#9089FC]" style="clip-path: polygon(100% 38.5%, 82.6% 100%, 60.2% 37.7%, 52.4% 32.1%, 47.5% 41.8%, 45.2% 65.6%, 27.5% 23.4%, 0.1% 35.3%, 17.9% 0%, 27.7% 23.4%, 76.2% 2.5%, 74.2% 56%, 100% 38.5%)" />
-      </div>
-    </div>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 border border-gray-200 rounded-lg shadow">
+          <h2 v-if="selectedStockName">{{ selectedStockName }}</h2>
 
-    <div class="space-y-16 py-16 xl:space-y-20">
-      <!-- Recent activity table -->
-      <div>
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 class="mx-auto max-w-2xl text-base font-semibold leading-6 text-gray-900 lg:mx-0 lg:max-w-none">Recent activity</h2>
+
+          <div class="p-1">
+            <other-metric-charts :stockData="selectedStockData"></other-metric-charts>
+          </div>
+
+
         </div>
-        <div class="mt-6 overflow-hidden border-t border-gray-100">
-          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-              <table class="w-full text-left">
-                <thead class="sr-only">
-                  <tr>
-                    <th>Amount</th>
-                    <th class="hidden sm:table-cell">Client</th>
-                    <th>More details</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <template v-for="day in days" :key="day.dateTime">
-                    <tr class="text-sm leading-6 text-gray-900">
-                      <th scope="colgroup" colspan="3" class="relative isolate py-2 font-semibold">
-                        <time :datetime="day.dateTime">{{ day.date }}</time>
-                        <div class="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 bg-gray-50" />
-                        <div class="absolute inset-y-0 left-0 -z-10 w-screen border-b border-gray-200 bg-gray-50" />
-                      </th>
-                    </tr>
-                    <tr v-for="transaction in day.transactions" :key="transaction.id">
-                      <td class="relative py-5 pr-6">
-                        <div class="flex gap-x-6">
-                          <component :is="transaction.icon" class="hidden h-6 w-5 flex-none text-gray-400 sm:block" aria-hidden="true" />
-                          <div class="flex-auto">
-                            <div class="flex items-start gap-x-3">
-                              <div class="text-sm font-medium leading-6 text-gray-900">{{ transaction.amount }}</div>
-                              <div :class="[statuses[transaction.status], 'rounded-md py-1 px-2 text-xs font-medium ring-1 ring-inset']">{{ transaction.status }}</div>
-                            </div>
-                            <div v-if="transaction.tax" class="mt-1 text-xs leading-5 text-gray-500">{{ transaction.tax }} tax</div>
-                          </div>
-                        </div>
-                        <div class="absolute bottom-0 right-full h-px w-screen bg-gray-100" />
-                        <div class="absolute bottom-0 left-0 h-px w-screen bg-gray-100" />
-                      </td>
-                      <td class="hidden py-5 pr-6 sm:table-cell">
-                        <div class="text-sm leading-6 text-gray-900">{{ transaction.client }}</div>
-                        <div class="mt-1 text-xs leading-5 text-gray-500">{{ transaction.description }}</div>
-                      </td>
-                      <td class="py-5 text-right">
-                        <div class="flex justify-end">
-                          <a :href="transaction.href" class="text-sm font-medium leading-6 text-indigo-600 hover:text-indigo-500"
-                            >View<span class="hidden sm:inline"> transaction</span><span class="sr-only">, invoice #{{ transaction.invoiceNumber }}, {{ transaction.client }}</span></a
-                          >
-                        </div>
-                        <div class="mt-1 text-xs leading-5 text-gray-500">
-                          Invoice <span class="text-gray-900">#{{ transaction.invoiceNumber }}</span>
-                        </div>
-                      </td>
-                    </tr>
-                  </template>
-                </tbody>
-              </table>
-            </div>
+        <div class="p-4 border border-gray-200 rounded-lg shadow">
+          <div>
+            <my-chart :stockData="selectedStockData"></my-chart>
           </div>
         </div>
       </div>
 
-      <!-- Recent client list-->
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-          <div class="flex items-center justify-between">
-            <h2 class="text-base font-semibold leading-7 text-gray-900">Recent clients</h2>
-            <a href="#" class="text-sm font-semibold leading-6 text-indigo-600 hover:text-indigo-500">View all<span class="sr-only">, clients</span></a>
-          </div>
-          <ul role="list" class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
-            <li v-for="client in clients" :key="client.id" class="overflow-hidden rounded-xl border border-gray-200">
-              <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-                <img :src="client.imageUrl" :alt="client.name" class="h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10" />
-                <div class="text-sm font-medium leading-6 text-gray-900">{{ client.name }}</div>
-                <Menu as="div" class="relative ml-auto">
-                  <MenuButton class="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
-                    <span class="sr-only">Open options</span>
-                    <EllipsisHorizontalIcon class="h-5 w-5" aria-hidden="true" />
-                  </MenuButton>
-                  <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-                    <MenuItems class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                      <MenuItem v-slot="{ active }">
-                        <a href="#" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900']"
-                          >View<span class="sr-only">, {{ client.name }}</span></a
-                        >
-                      </MenuItem>
-                      <MenuItem v-slot="{ active }">
-                        <a href="#" :class="[active ? 'bg-gray-50' : '', 'block px-3 py-1 text-sm leading-6 text-gray-900']"
-                          >Edit<span class="sr-only">, {{ client.name }}</span></a
-                        >
-                      </MenuItem>
-                    </MenuItems>
-                  </transition>
-                </Menu>
-              </div>
-              <dl class="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-                <div class="flex justify-between gap-x-4 py-3">
-                  <dt class="text-gray-500">Last invoice</dt>
-                  <dd class="text-gray-700">
-                    <time :datetime="client.lastInvoice.dateTime">{{ client.lastInvoice.date }}</time>
-                  </dd>
-                </div>
-                <div class="flex justify-between gap-x-4 py-3">
-                  <dt class="text-gray-500">Amount</dt>
-                  <dd class="flex items-start gap-x-2">
-                    <div class="font-medium text-gray-900">{{ client.lastInvoice.amount }}</div>
-                    <div :class="[statuses[client.lastInvoice.status], 'rounded-md py-1 px-2 text-xs font-medium ring-1 ring-inset']">{{ client.lastInvoice.status }}</div>
-                  </dd>
-                </div>
-              </dl>
-            </li>
-          </ul>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-1">
+          <chart-market-cap :stockData="selectedStockData"></chart-market-cap>
+        </div>
+
+        <div class="p-1">
+          <chart-volume :stockData="selectedStockData"></chart-volume>
         </div>
       </div>
+
     </div>
+
+
   </main>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import {
-  ArrowDownCircleIcon,
-  ArrowPathIcon,
-  ArrowUpCircleIcon,
-  Bars3Icon,
-  EllipsisHorizontalIcon,
-  PlusSmallIcon,
-} from '@heroicons/vue/20/solid'
-import { BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import {ref, computed} from 'vue';
 
-const navigation = [
-  { name: 'Home', href: '#' },
-  { name: 'Invoices', href: '#' },
-  { name: 'Clients', href: '#' },
-  { name: 'Expenses', href: '#' },
-]
-const secondaryNavigation = [
-  { name: 'Last 7 days', href: '#', current: true },
-  { name: 'Last 30 days', href: '#', current: false },
-  { name: 'All-time', href: '#', current: false },
-]
-const stats = [
-  { name: 'Revenue', value: '$405,091.00', change: '+4.75%', changeType: 'positive' },
-  { name: 'Overdue invoices', value: '$12,787.00', change: '+54.02%', changeType: 'negative' },
-  { name: 'Outstanding invoices', value: '$245,988.00', change: '-1.39%', changeType: 'positive' },
-  { name: 'Expenses', value: '$30,156.00', change: '+10.18%', changeType: 'negative' },
-]
-const statuses = {
-  Paid: 'text-green-700 bg-green-50 ring-green-600/20',
-  Withdraw: 'text-gray-600 bg-gray-50 ring-gray-500/10',
-  Overdue: 'text-red-700 bg-red-50 ring-red-600/10',
-}
-const days = [
-  {
-    date: 'Today',
-    dateTime: '2023-03-22',
-    transactions: [
-      {
-        id: 1,
-        invoiceNumber: '00012',
-        href: '#',
-        amount: '$7,600.00 USD',
-        tax: '$500.00',
-        status: 'Paid',
-        client: 'Reform',
-        description: 'Website redesign',
-        icon: ArrowUpCircleIcon,
-      },
-      {
-        id: 2,
-        invoiceNumber: '00011',
-        href: '#',
-        amount: '$10,000.00 USD',
-        status: 'Withdraw',
-        client: 'Tom Cook',
-        description: 'Salary',
-        icon: ArrowDownCircleIcon,
-      },
-      {
-        id: 3,
-        invoiceNumber: '00009',
-        href: '#',
-        amount: '$2,000.00 USD',
-        tax: '$130.00',
-        status: 'Overdue',
-        client: 'Tuple',
-        description: 'Logo design',
-        icon: ArrowPathIcon,
-      },
-    ],
-  },
-  {
-    date: 'Yesterday',
-    dateTime: '2023-03-21',
-    transactions: [
-      {
-        id: 4,
-        invoiceNumber: '00010',
-        href: '#',
-        amount: '$14,000.00 USD',
-        tax: '$900.00',
-        status: 'Paid',
-        client: 'SavvyCal',
-        description: 'Website redesign',
-        icon: ArrowUpCircleIcon,
-      },
-    ],
-  },
-]
-const clients = [
-  {
-    id: 1,
-    name: 'Tuple',
-    imageUrl: 'https://tailwindui.com/img/logos/48x48/tuple.svg',
-    lastInvoice: { date: 'December 13, 2022', dateTime: '2022-12-13', amount: '$2,000.00', status: 'Overdue' },
-  },
-  {
-    id: 2,
-    name: 'SavvyCal',
-    imageUrl: 'https://tailwindui.com/img/logos/48x48/savvycal.svg',
-    lastInvoice: { date: 'January 22, 2023', dateTime: '2023-01-22', amount: '$14,000.00', status: 'Paid' },
-  },
-  {
-    id: 3,
-    name: 'Reform',
-    imageUrl: 'https://tailwindui.com/img/logos/48x48/reform.svg',
-    lastInvoice: { date: 'January 23, 2023', dateTime: '2023-01-23', amount: '$7,600.00', status: 'Paid' },
-  },
-]
+import axios from 'axios';
 
-const mobileMenuOpen = ref(false)
+import MyChart from '../components/MyChart.vue';
+import OtherMetricCharts from '../components/OtherMetricCharts.vue';
+import ChartMarketCap from '../components/ChartMarketCap.vue';
+import ChartVolume from '../components/ChartVolume.vue';
+
+import {Menu, MenuButton, MenuItem, MenuItems, Transition} from '@headlessui/vue';
+import {ChevronDownIcon} from '@heroicons/vue/20/solid';
+
+const stockOptions = ref(['AI', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']);
+const selectedStockName = ref("")
+const selectedStockData = ref([]);
+
+const selectStock = async (stock) => {
+  try {
+    const response = await axios.get('http://localhost:5040/store/quotes/get_item_by_symbol/' + stock, {});
+    var data = response.data.data;
+    selectedStockData.value = data[0]; // Assuming the API returns an array
+    //console.log("Reach")
+    //console.log(response.data.data)
+
+    selectedStockData.value = response.data.data;
+    selectedStockName.value = stock
+    //console.log(selectedStockData);
+  } catch (error) {
+
+    console.error(error);
+  }
+
+
+  /*  try {
+      const response = await fetch(`http://localhost:5040/store/quotes/get_item_by_symbol/${stock}`);
+      console.log(response)
+      console.log("3232")
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      selectedStockData.value = data[0]; // Assuming the API returns an array
+    } catch (error) {
+      console.error('Error fetching stock data:', error);
+      selectedStockData.value = null;
+    }*/
+};
+const calculatedStats = computed(() => {
+  if (!selectedStockData.value || selectedStockData.value.length === 0) {
+    return [];
+  }
+
+  let totalChange = 0, totalDayLow = 0, totalDayHigh = 0, totalYearHigh = 0, totalYearLow = 0, totalMarketCap = 0,
+      totalPriceAvg50 = 0, totalPriceAvg200 = 0, totalPrice = 0;
+
+  selectedStockData.value.forEach(stock => {
+    totalChange += stock.change;
+    totalDayLow += stock.dayLow;
+    totalDayHigh += stock.dayHigh;
+    totalYearHigh += stock.yearHigh;
+    totalYearLow += stock.yearLow;
+    totalMarketCap += stock.marketCap;
+    totalPriceAvg50 += stock.priceAvg50;
+    totalPriceAvg200 += stock.priceAvg200;
+    totalPrice += stock.price;
+  });
+
+  const avgChange = totalChange / selectedStockData.value.length;
+  const avgDayLow = totalDayLow / selectedStockData.value.length;
+  const avgDayHigh = totalDayHigh / selectedStockData.value.length;
+  const avgYearHigh = totalYearHigh / selectedStockData.value.length;
+  const avgYearLow = totalYearLow / selectedStockData.value.length;
+  const avgMarketCap = totalMarketCap / selectedStockData.value.length;
+  const avgPriceAvg50 = totalPriceAvg50 / selectedStockData.value.length;
+  const avgPriceAvg200 = totalPriceAvg200 / selectedStockData.value.length;
+  const avgPrice = totalPrice / selectedStockData.value.length;
+
+  return [
+    {name: 'Average Change', value: avgChange.toFixed(2) + ' USD'},
+    {name: 'Average Day Low', value: avgDayLow.toFixed(2) + ' USD'},
+    {name: 'Average Day High', value: avgDayHigh.toFixed(2) + ' USD'},
+    {name: 'Average Year High', value: avgYearHigh.toFixed(2) + ' USD'},
+    {name: 'Average Year Low', value: avgYearLow.toFixed(2) + ' USD'},
+    {name: 'Average Market Cap', value: (avgMarketCap / 1e9).toFixed(2) + ' Billion USD'},
+    {name: 'Average 50-Day Price', value: avgPriceAvg50.toFixed(2) + ' USD'},
+    {name: 'Average 200-Day Price', value: avgPriceAvg200.toFixed(2) + ' USD'},
+    {name: 'Average Price', value: avgPrice.toFixed(2) + ' USD'},
+    // ... other stats ...
+  ];
+});
+
+
 </script>
